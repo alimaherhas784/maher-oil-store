@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">متجر ماهر حسن لزيوت المحركات والشحوم</title>
+    <meta name="description" content="متجر ماهر حسن لزيوت المحركات والشحوم الصناعية - كالونات، براميل، عبوات، زيوت فرام وشحوم أصلية 100%.">
+    <meta property="og:title" content="متجر ماهر حسن لزيوت المحركات والشحوم">
+    <meta property="og:description" content="تصفح كتالوج الزيوت والشحوم الصناعية واطلب طلبيتك أونلاين أو عبر الواتساب.">
+    <meta property="og:type" content="website">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { cairo: ['Cairo', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-900">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-2">
+                <!-- Logo & Brand -->
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-tr from-amber-500 to-amber-300 rounded-xl flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-amber-500/20 flex-shrink-0">
+                        <i class="fa-solid fa-oil-can"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-2xl font-black text-white tracking-wide flex flex-wrap items-center gap-2">
+                            <span data-i18n="storeName">متجر ماهر حسن</span>
+                            <span data-i18n="storeBadge" class="text-[10px] sm:text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold">لزيوت المحركات</span>
+                        </h1>
+                        <p data-i18n="storeSub" class="text-[11px] sm:text-xs text-slate-400 hidden sm:block">أجود أنواع الزيوت والشحوم الصناعية والمحركات</p>
+                    </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Language Switcher -->
+                    <button onclick="toggleLanguage()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-3 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-globe"></i>
+                        <span id="langBtnText">EN</span>
+                    </button>
+
+                    <!-- Admin Dashboard Button (Visible only to Admin) -->
+                    <button id="adminPanelBtn" onclick="openAdminModal()" class="hidden bg-purple-600 hover:bg-purple-500 text-white px-3.5 py-2 rounded-xl text-xs font-extrabold transition items-center gap-1.5 shadow-lg shadow-purple-600/20">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span data-i18n="adminBtn" class="hidden md:inline">لوحة التحكم</span>
+                    </button>
+
+                    <!-- My Orders Button (Visible when logged in) -->
+                    <button id="myOrdersBtn" onclick="openMyOrdersModal()" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition items-center gap-1.5">
+                        <i class="fa-solid fa-box-archive text-amber-400"></i>
+                        <span data-i18n="myOrdersBtn" class="hidden md:inline">طلباتي</span>
+                    </button>
+
+                    <!-- Auth / User Button -->
+                    <button id="authBtn" onclick="handleAuthClick()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-user text-amber-400"></i>
+                        <span id="authBtnText" data-i18n="loginBtn">دخول / حساب</span>
+                    </button>
+
+                    <!-- Cart Button -->
+                    <button onclick="toggleCartModal(true)" class="relative flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold px-4 py-2 rounded-xl shadow-lg shadow-amber-500/20 transition active:scale-95">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span data-i18n="cartBtn" class="hidden sm:inline text-sm">السلة</span>
+                        <span id="cartCountBadge" class="bg-slate-950 text-amber-400 text-xs font-black px-2 py-0.5 rounded-full min-w-[20px] text-center border border-amber-400/30">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-b from-slate-900 via-slate-800/60 to-slate-900 border-b border-slate-800/80 py-6 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-700/60 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-flex items-center gap-2 text-amber-400 text-xs font-bold bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full mb-3">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span data-i18n="heroBadge">منتجات أصلية 100% ومضمونة</span>
+                    </span>
+                    <h2 data-i18n="heroTitle" class="text-2xl sm:text-4xl font-extrabold text-white mb-2 leading-tight">المتجر المتكامل لزيوت السيارات والمحركات</h2>
+                    <p data-i18n="heroDesc" class="text-slate-300 text-sm sm:text-base leading-relaxed">تصفح كتالوج الزيوت الكالونات، البراميل، العبوات، والفرامل والشحوم. اختر المنتجات وطريقة الدفع المناسبة وأرسل طلبك بسهولة.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Storefront -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        <!-- Filter & Search Toolbar -->
+        <div class="bg-slate-800/80 backdrop-blur border border-slate-700/80 rounded-2xl p-4 sm:p-6 mb-8 shadow-xl">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Search -->
+                <div>
+                    <label data-i18n="searchLabel" class="block text-xs font-bold text-slate-300 mb-1">بحث سريع</label>
+                    <div class="relative">
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="ابحث باسم المنتج، العيار..."
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+                <!-- Type Filter -->
+                <div>
+                    <label data-i18n="typeLabel" class="block text-xs font-bold text-slate-300 mb-1">نوع القطعة / العبوة</label>
+                    <select id="typeFilter" onchange="applyFilters()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                        <option value="ALL" data-i18n="allTypes">جميع التعبئات</option>
+                        <option value="كالون" data-i18n="typeGallon">كالون (20 لتر)</option>
+                        <option value="برميل" data-i18n="typeDrum">برميل (180 لتر / 60 لتر)</option>
+                        <option value="عبوة" data-i18n="typeBottle">عبوة (1 لتر / 4 لتر / 6 لتر)</option>
+                        <option value="فرام" data-i18n="typeBrake">زيت فرام</option>
+                        <option value="شحم" data-i18n="typeGrease">شحوم (سطل / علبة)</option>
+                    </select>
+                </div>
+                <!-- Brand Filter -->
+                <div>
+                    <label data-i18n="brandLabel" class="block text-xs font-bold text-slate-300 mb-1">الشركة المصنعة / الماركة</label>
+                    <select id="brandFilter" onchange="applyFilters()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                        <option value="ALL" data-i18n="allBrands">جميع الماركات</option>
+                        <option value="اكس سبيد">X-Speed (اكس سبيد)</option>
+                        <option value="يوروتيك">EuroTech (يوروتيك)</option>
+                        <option value="ارمادا">Armada (ارمادا)</option>
+                        <option value="نيفون">Nifon (نيفون)</option>
+                        <option value="فوكس">Fuchs (فوكس)</option>
+                        <option value="جيري فليكس">Jerry Flex (جيري فليكس)</option>
+                        <option value="STP">STP / فرام 21</option>
+                        <option value="أخرى" data-i18n="otherBrands">علامات تجارية أخرى</option>
+                    </select>
+                </div>
+                <!-- Sort Filter -->
+                <div>
+                    <label data-i18n="sortLabel" class="block text-xs font-bold text-slate-300 mb-1">ترتيب العرض</label>
+                    <select id="sortFilter" onchange="applyFilters()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                        <option value="default" data-i18n="sortDefault">الافتراضي</option>
+                        <option value="name" data-i18n="sortName">حسب الاسم</option>
+                        <option value="priceAsc" data-i18n="sortPriceAsc">السعر: من الأقل للأعلى</option>
+                        <option value="priceDesc" data-i18n="sortPriceDesc">السعر: من الأعلى للأقل</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-700/60 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+                <div>
+                    <span data-i18n="foundItems">عدد المنتجات المعروضة:</span>
+                    <span id="itemsCount" class="font-bold text-amber-400 mx-1">0</span>
+                </div>
+                <button onclick="resetFilters()" class="text-amber-400 hover:text-amber-300 font-bold transition flex items-center gap-1">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span data-i18n="resetFilters">إعادة ضبط الفلاتر</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+        <!-- Empty State -->
+        <div id="noResults" class="hidden text-center py-16 bg-slate-800/40 border border-slate-800 rounded-3xl">
+            <i class="fa-solid fa-box-open text-6xl text-slate-600 mb-4"></i>
+            <h3 data-i18n="noResultsTitle" class="text-xl font-bold text-slate-300">لم يتم العثور على أي منتج</h3>
+            <button onclick="resetFilters()" data-i18n="resetFilters" class="mt-4 bg-amber-500 text-slate-950 font-bold px-6 py-2 rounded-xl">إعادة ضبط الفلاتر</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 mt-12 text-slate-400 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-oil-can text-amber-500"></i>
+                        <span data-i18n="storeName">متجر ماهر حسن</span>
+                    </h3>
+                    <p data-i18n="footerAbout" class="text-xs text-slate-400 leading-relaxed">
+                        نوفر لكم أجود وأفضل أنواع زيوت السيارات والمحركات والهيدروليك والتروس والشحوم الصناعية بكافة السعات.
+                    </p>
+                </div>
+                <div>
+                    <h4 data-i18n="contactUs" class="text-white font-bold mb-2">تواصل معنا</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-phone text-amber-500"></i> <span>0988996382</span></li>
+                        <li class="flex items-center gap-2"><i class="fa-brands fa-whatsapp text-emerald-500"></i> <span>WhatsApp: 0988996382</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 data-i18n="qualityTitle" class="text-white font-bold mb-2">الضمان وطرق الدفع</h4>
+                    <p data-i18n="qualityDesc" class="text-xs text-slate-400 leading-relaxed">
+                        ندعم الدفع نقداً عند الاستلام، سيريتيل كاش، شام كاش، الحوالات البنكية والهرم، وبطاقات فيزا وماستر كارد.
+                    </p>
+                </div>
+            </div>
+            <div class="border-t border-slate-900 pt-4 text-center text-xs text-slate-500">
+                &copy; <span id="currentYear"></span> <span data-i18n="storeName">متجر ماهر حسن</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= CART & CHECKOUT MODAL ================= -->
+    <div id="cartModal" class="fixed inset-0 z-50 hidden">
+        <div onclick="toggleCartModal(false)" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+        <div class="absolute inset-y-0 left-0 max-w-full flex">
+            <div class="w-screen max-w-md bg-slate-900 text-white border-r border-slate-800 flex flex-col shadow-2xl">
+                <!-- Header -->
+                <div class="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-center text-amber-400">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                        <div>
+                            <h3 data-i18n="cartTitle" class="font-bold text-lg text-white">سلة الطلبيات</h3>
+                            <p data-i18n="cartSub" class="text-xs text-slate-400">مراجعة المنتجات وإتمام الطلب</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleCartModal(false)" class="text-slate-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+
+                <!-- Cart Items -->
+                <div id="cartItemsContainer" class="flex-grow p-4 overflow-y-auto space-y-3"></div>
+
+                <!-- Checkout Form -->
+                <div class="p-4 bg-slate-950 border-t border-slate-800 space-y-3 max-h-[60vh] overflow-y-auto">
+                    <h4 data-i18n="custInfoTitle" class="font-bold text-xs text-amber-400 uppercase tracking-wider">معلومات العميل والدفع</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" id="custName" placeholder="الاسم الكامل *" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none">
+                        <input type="tel" id="custPhone" placeholder="رقم الهاتف / الواتساب *" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none">
+                    </div>
+                    <input type="text" id="custAddress" placeholder="المدينة / العنوان التفصيلي / المحل *" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none">
+
+                    <!-- Payment Method Selector -->
+                    <div>
+                        <label data-i18n="paymentMethodLabel" class="block text-xs font-bold text-slate-300 mb-1">طريقة الدفع</label>
+                        <select id="paymentMethodSelect" onchange="onPaymentMethodChange()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"></select>
+                        <div id="paymentInstructionsBox" class="mt-2 p-2.5 bg-slate-900/90 border border-amber-500/30 rounded-xl text-xs text-amber-300 hidden"></div>
+                    </div>
+
+                    <div id="paymentRefContainer" class="hidden">
+                        <input type="text" id="paymentRefInput" placeholder="رقم عملية التحويل / رقم الإشعار *" class="w-full bg-slate-900 border border-amber-500/50 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none">
+                    </div>
+
+                    <textarea id="custNotes" rows="2" placeholder="ملاحظات إضافية (اختياري)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"></textarea>
+
+                    <!-- Summary -->
+                    <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-xs font-bold">
+                        <span data-i18n="totalItemsLabel" class="text-slate-400">إجمالي القطع:</span>
+                        <span id="cartTotalItems" class="text-amber-400">0</span>
+                    </div>
+                    <div id="cartTotalPriceRow" class="flex justify-between items-center text-sm font-extrabold">
+                        <span data-i18n="totalPriceLabel" class="text-slate-300">إجمالي الفاتورة:</span>
+                        <span id="cartTotalPrice" class="text-emerald-400">0</span>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        <button id="submitOrderBtn" onclick="submitOrder()" class="flex-grow bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs">
+                            <i class="fa-brands fa-whatsapp text-base"></i>
+                            <span data-i18n="sendOrderBtn">تأكيد الطلب وإرساله</span>
+                        </button>
+                        <button onclick="clearCart()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-3 py-2.5 rounded-xl text-xs">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= AUTH MODAL (LOGIN / REGISTER) ================= -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeAuthModal()" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+        <div class="relative bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl z-10">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="authModalTitle" class="text-xl font-extrabold text-white">تسجيل الدخول</h3>
+                <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-xl mb-5">
+                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-xs font-bold bg-amber-500 text-slate-950">تسجيل دخول</button>
+                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white">إنشاء حساب جديد</button>
+            </div>
+
+            <!-- Form -->
+            <form id="authForm" onsubmit="submitAuthForm(event)" class="space-y-3">
+                <div id="registerFields" class="space-y-3 hidden">
+                    <input type="text" id="regName" placeholder="الاسم الكامل *" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+                    <input type="tel" id="regPhone" placeholder="رقم الهاتف / الواتساب *" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+                    <input type="text" id="regAddress" placeholder="المدينة / العنوان / المحل *" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+                </div>
+                <input type="email" id="authEmail" required placeholder="البريد الإلكتروني *" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+                <input type="password" id="authPassword" required placeholder="كلمة المرور (6 أحرف على الأقل) *" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+
+                <button type="submit" id="authSubmitBtn" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-3 rounded-xl transition text-sm">
+                    دخول
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= CUSTOMER MY ORDERS MODAL ================= -->
+    <div id="myOrdersModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeMyOrdersModal()" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+        <div class="relative bg-slate-900 border border-slate-700 rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl z-10 overflow-hidden">
+            <div class="p-5 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="text-lg font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
+                    <span data-i18n="myOrdersBtn">طلباتي السابقة</span>
+                </h3>
+                <button onclick="closeMyOrdersModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="myOrdersList" class="p-5 overflow-y-auto space-y-4 flex-grow"></div>
+        </div>
+    </div>
+
+    <!-- ================= FULL ADMIN DASHBOARD MODAL ================= -->
+    <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-6">
+        <div onclick="closeAdminModal()" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md"></div>
+        <div class="relative bg-slate-900 border border-slate-700 rounded-3xl max-w-7xl w-full h-[92vh] flex flex-col shadow-2xl z-10 overflow-hidden">
+            <!-- Admin Header -->
+            <div class="p-4 sm:p-5 bg-slate-950 border-b border-slate-800 flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-purple-600/20 border border-purple-500/40 rounded-xl flex items-center justify-center text-purple-400">
+                        <i class="fa-solid fa-gauge-high text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-white">لوحة التحكم الشاملة وإدارة المبيعات</h3>
+                        <p class="text-xs text-slate-400">إدارة المنتجات والصور، سجل المبيعات والعملاء، وطرق الدفع</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="seedInitialProductsToDB()" id="seedBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>رفع الـ 130 منتج لقاعدة البيانات</span>
+                    </button>
+                    <button onclick="closeAdminModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="bg-slate-950/60 border-b border-slate-800 px-4 flex gap-2 overflow-x-auto py-2">
+                <button onclick="switchAdminTab('orders')" id="admTabOrders" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-500 text-slate-950 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> سجل المبيعات والطلبات
+                </button>
+                <button onclick="switchAdminTab('customers')" id="admTabCustomers" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-users"></i> سجل العملاء المسجلين
+                </button>
+                <button onclick="switchAdminTab('products')" id="admTabProducts" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-boxes-stacked"></i> إدارة المنتجات والصور
+                </button>
+                <button onclick="switchAdminTab('payments')" id="admTabPayments" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-credit-card"></i> طرق الدفع
+                </button>
+            </div>
+
+            <!-- Admin Tab Content Area -->
+            <div class="flex-grow overflow-y-auto p-4 sm:p-6">
+                <!-- TAB 1: ORDERS & SALES LOG -->
+                <div id="adminOrdersSection" class="space-y-6">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="salesStatsCards"></div>
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <h4 class="font-bold text-white text-sm">كافة الطلبات وسجل المبيعات التفصيلي</h4>
+                        <select id="adminOrderStatusFilter" onchange="renderAdminOrders()" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                            <option value="ALL">جميع الحالات</option>
+                            <option value="جديد">جديد</option>
+                            <option value="قيد التجهيز">قيد التجهيز</option>
+                            <option value="مكتمل">مكتمل</option>
+                            <option value="ملغى">ملغى</option>
+                        </select>
+                    </div>
+                    <div id="adminOrdersContainer" class="space-y-4"></div>
+                </div>
+
+                <!-- TAB 2: CUSTOMERS LIST -->
+                <div id="adminCustomersSection" class="hidden space-y-4">
+                    <h4 class="font-bold text-white text-sm">قائمة العملاء المسجلين وتفاصيلهم</h4>
+                    <div id="adminCustomersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+
+                <!-- TAB 3: PRODUCTS & IMAGE UPLOAD -->
+                <div id="adminProductsSection" class="hidden space-y-6">
+                    <!-- Add / Edit Product Form -->
+                    <form id="productForm" onsubmit="saveProduct(event)" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 id="productFormTitle" class="font-bold text-amber-400 text-sm">إضافة منتج جديد / تعديل منتج</h4>
+                            <button type="button" onclick="resetProductForm()" class="text-xs text-slate-400 hover:text-white">تفريغ الحقول</button>
+                        </div>
+                        <input type="hidden" id="prodId">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div>
+                                <label class="text-[11px] text-slate-400">التعبئة (عربي) *</label>
+                                <select id="prodTypeAr" onchange="autoFillEnglishProductFields()" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="كالون">كالون</option>
+                                    <option value="برميل">برميل</option>
+                                    <option value="عبوة">عبوة</option>
+                                    <option value="فرام">فرام</option>
+                                    <option value="شحم">شحم</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">Packaging (English) *</label>
+                                <input type="text" id="prodTypeEn" required value="Gallon" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">الماركة (عربي) *</label>
+                                <input type="text" id="prodBrandAr" oninput="autoFillEnglishProductFields()" required placeholder="مثال: اكس سبيد" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">Brand (English) *</label>
+                                <input type="text" id="prodBrandEn" required placeholder="e.g. X-Speed" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">العيار / الصنف (عربي) *</label>
+                                <input type="text" id="prodGradeAr" oninput="autoFillEnglishProductFields()" required placeholder="مثال: 20w50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">Grade / Name (English) *</label>
+                                <input type="text" id="prodGradeEn" required placeholder="e.g. 20W50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">المواصفة (عربي)</label>
+                                <input type="text" id="prodSpecAr" oninput="autoFillEnglishProductFields()" placeholder="مثال: CF-4" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">Spec (English)</label>
+                                <input type="text" id="prodSpecEn" placeholder="e.g. CF-4" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">الحجم / السعة (عربي) *</label>
+                                <input type="text" id="prodSizeAr" oninput="autoFillEnglishProductFields()" required placeholder="مثال: 20لتر" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">Size (English) *</label>
+                                <input type="text" id="prodSizeEn" required placeholder="e.g. 20L" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">السعر (اتركه 0 إن كان حسب الطلب)</label>
+                                <input type="number" step="0.01" id="prodPrice" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">صورة المنتج (اختياري)</label>
+                                <input type="file" id="prodImageFile" accept="image/*" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-300">
+                                <input type="hidden" id="prodExistingImageUrl">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-2">
+                            <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                                <input type="checkbox" id="prodAvailable" checked class="accent-amber-500 w-4 h-4">
+                                <span>المنتج متوفر حالياً للطلب</span>
+                            </label>
+                            <button type="submit" id="saveProdBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-6 py-2 rounded-xl text-xs transition">
+                                حفظ المنتج
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Admin Products Table -->
+                    <div id="adminProductsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+                </div>
+
+                <!-- TAB 4: PAYMENT METHODS -->
+                <div id="adminPaymentsSection" class="hidden space-y-6">
+                    <form id="paymentForm" onsubmit="savePaymentMethod(event)" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                        <h4 class="font-bold text-amber-400 text-sm">إضافة / تعديل وسيلة دفع</h4>
+                        <input type="hidden" id="payId">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <input type="text" id="payCode" required placeholder="الكود (مثال: sham_cash)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            <input type="text" id="payNameAr" required placeholder="اسم طريقة الدفع (عربي) *" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            <input type="text" id="payNameEn" required placeholder="Method Name (English) *" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" id="payDetailsAr" placeholder="تعليمات الدفع ورقم الحساب (عربي)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                            <input type="text" id="payDetailsEn" placeholder="Payment Details & Account (English)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                        </div>
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                            <div class="flex items-center gap-4">
+                                <label class="flex items-center gap-2 text-xs text-slate-300">
+                                    <input type="checkbox" id="payRequiresReceipt" class="accent-amber-500"> يتطلب إدخال رقم إشعار التحويل
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-slate-300">
+                                    <input type="checkbox" id="payActive" checked class="accent-amber-500"> مفعّل
+                                </label>
+                            </div>
+                            <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-5 py-2 rounded-xl text-xs">حفظ طريقة الدفع</button>
+                        </div>
+                    </form>
+                    <div id="adminPaymentsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-amber-500 text-slate-950 px-5 py-3 rounded-2xl shadow-2xl font-bold flex items-center gap-3 border border-amber-300">
+        <i class="fa-solid fa-circle-check text-xl"></i>
+        <span id="toastMsg"></span>
+    </div>
+
+    <!-- ================= APPLICATION LOGIC ================= -->
+    <script>
+        // 1. SUPABASE CONFIGURATION
+        const SUPABASE_URL = "https://bewsjzneienkriemddfs.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_LkEdJ2hJYLDVOzp6jrav4Q_XB7sdTv8";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 2. INITIAL 130 PRODUCTS (FALLBACK & ONE-CLICK SEED SOURCE)
+        const rawInitialProducts = [
+            { id: 1, type: "كالون", brand: "اكس سبيد", grade: "20w50", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 2, type: "كالون", brand: "اكس سبيد", grade: "10w40", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 3, type: "كالون", brand: "اكس سبيد", grade: "50", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 4, type: "كالون", brand: "اكس سبيد", grade: "40", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 5, type: "كالون", brand: "اكس سبيد", grade: "15w40", spec: "CI-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 6, type: "كالون", brand: "اكس سبيد", grade: "140", spec: "تروس", size: "20لتر", icon: "fa-gears" },
+            { id: 7, type: "كالون", brand: "اكس سبيد", grade: "80w90", spec: "تروس", size: "20لتر", icon: "fa-gears" },
+            { id: 8, type: "كالون", brand: "اكس سبيد", grade: "5w30", spec: "SN", size: "20لتر", icon: "fa-oil-can" },
+            { id: 9, type: "كالون", brand: "اكس سبيد", grade: "5w40", spec: "SN", size: "20لتر", icon: "fa-oil-can" },
+            { id: 10, type: "كالون", brand: "نيفون", grade: "40", spec: "CF", size: "20لتر", icon: "fa-oil-can" },
+            { id: 11, type: "كالون", brand: "نيفون", grade: "140", spec: "تروس", size: "20لتر", icon: "fa-gears" },
+            { id: 12, type: "كالون", brand: "نيفون", grade: "80w90", spec: "تروس", size: "20لتر", icon: "fa-gears" },
+            { id: 13, type: "كالون", brand: "نيفون", grade: "50", spec: "CF", size: "20لتر", icon: "fa-oil-can" },
+            { id: 14, type: "كالون", brand: "جيري فليكس", grade: "تزييت بالنقطة", spec: "خاص", size: "20لتر", icon: "fa-droplet" },
+            { id: 15, type: "كالون", brand: "يوروتيك", grade: "15w40", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 16, type: "كالون", brand: "يوروتيك", grade: "20w50", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 17, type: "كالون", brand: "يوروتيك", grade: "40", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 18, type: "كالون", brand: "يوروتيك", grade: "50", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 19, type: "كالون", brand: "يوروتيك", grade: "منظف بيئة", spec: "إضافة", size: "10لتر", icon: "fa-filter" },
+            { id: 20, type: "كالون", brand: "ارمادا", grade: "20w50", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 21, type: "كالون", brand: "ارمادا", grade: "140", spec: "تروس", size: "20لتر", icon: "fa-gears" },
+            { id: 22, type: "كالون", brand: "ارمادا", grade: "90", spec: "تروس", size: "20لتر", icon: "fa-gears" },
+            { id: 23, type: "كالون", brand: "ارمادا", grade: "50", spec: "CF-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 24, type: "كالون", brand: "ارمادا", grade: "40", spec: "CF", size: "20لتر", icon: "fa-oil-can" },
+            { id: 25, type: "كالون", brand: "ارمادا", grade: "مسننات", spec: "68", size: "20لتر", icon: "fa-gears" },
+            { id: 26, type: "كالون", brand: "ارمادا", grade: "15w40", spec: "CI-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 27, type: "كالون", brand: "فوكس", grade: "15w40", spec: "CI-4", size: "20لتر", icon: "fa-oil-can" },
+            { id: 28, type: "كالون", brand: "ارمادا", grade: "هيدروليك", spec: "68", size: "20لتر", icon: "fa-ring" },
+            { id: 29, type: "كالون", brand: "اكس سبيد", grade: "هيدروليك", spec: "32", size: "20لتر", icon: "fa-ring" },
+            { id: 30, type: "كالون", brand: "اكس سبيد", grade: "هيدروليك", spec: "46", size: "20لتر", icon: "fa-ring" },
+            { id: 31, type: "كالون", brand: "اكس سبيد", grade: "هيدروليك", spec: "68", size: "20لتر", icon: "fa-ring" },
+            { id: 32, type: "كالون", brand: "اكس سبيد", grade: "واو", spec: "10", size: "20لتر", icon: "fa-flask" },
+            { id: 33, type: "كالون", brand: "اكس سبيد", grade: "مسننات", spec: "68", size: "20لتر", icon: "fa-gears" },
+            { id: 34, type: "برميل", brand: "اكس سبيد", grade: "20w50", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 35, type: "برميل", brand: "اكس سبيد", grade: "10w40", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 36, type: "برميل", brand: "اكس سبيد", grade: "40", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 37, type: "برميل", brand: "اكس سبيد", grade: "50", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 38, type: "برميل", brand: "اكس سبيد", grade: "15w40", spec: "CI-4", size: "180لتر", icon: "fa-drum" },
+            { id: 39, type: "برميل", brand: "نيفون", grade: "عام", spec: "صناعي", size: "180لتر", icon: "fa-drum" },
+            { id: 40, type: "برميل", brand: "نيفون", grade: "50", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 41, type: "برميل", brand: "نيفون", grade: "40", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 42, type: "برميل", brand: "يوروتيك", grade: "20w50", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 43, type: "برميل", brand: "يوروتيك", grade: "15w40", spec: "CI-4", size: "180لتر", icon: "fa-drum" },
+            { id: 44, type: "برميل", brand: "يوروتيك", grade: "40", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 45, type: "برميل", brand: "يوروتيك", grade: "50", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 46, type: "برميل", brand: "يوروتيك", grade: "15w40", spec: "CF-4", size: "180لتر", icon: "fa-drum" },
+            { id: 47, type: "برميل", brand: "ارمادا", grade: "15w40", spec: "عام", size: "180لتر", icon: "fa-drum" },
+            { id: 48, type: "برميل", brand: "ارمادا", grade: "20w50", spec: "عام", size: "180لتر", icon: "fa-drum" },
+            { id: 49, type: "برميل", brand: "ارمادا", grade: "40", spec: "عام", size: "180لتر", icon: "fa-drum" },
+            { id: 50, type: "برميل", brand: "ارمادا", grade: "50", spec: "عام", size: "180لتر", icon: "fa-drum" },
+            { id: 51, type: "برميل", brand: "جيري فليكس", grade: "تزييت بالنقطة", spec: "خاص", size: "180لتر", icon: "fa-droplet" },
+            { id: 52, type: "برميل", brand: "مكررWX", grade: "تزييت بالنقطة", spec: "مكرر", size: "180لتر", icon: "fa-droplet" },
+            { id: 53, type: "برميل", brand: "ارمادا", grade: "هيدروليك", spec: "68", size: "180لتر", icon: "fa-drum" },
+            { id: 54, type: "برميل", brand: "اكس سبيد", grade: "واو", spec: "10", size: "180لتر", icon: "fa-drum" },
+            { id: 55, type: "برميل", brand: "يوروتيك", grade: "15w40", spec: "CF4", size: "60لتر", icon: "fa-drum" },
+            { id: 56, type: "برميل", brand: "يوروتيك", grade: "20w50", spec: "CF4", size: "60لتر", icon: "fa-drum" },
+            { id: 57, type: "برميل", brand: "يوروتيك", grade: "40", spec: "CF4", size: "60لتر", icon: "fa-drum" },
+            { id: 58, type: "برميل", brand: "يوروتيك", grade: "50", spec: "CF4", size: "60لتر", icon: "fa-drum" },
+            { id: 59, type: "عبوة", brand: "ارمادا", grade: "10w40", spec: "SL", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 60, type: "عبوة", brand: "ارمادا", grade: "20w50", spec: "SL", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 61, type: "عبوة", brand: "ارمادا", grade: "5w30", spec: "تخليقي", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 62, type: "عبوة", brand: "ارمادا", grade: "5w40", spec: "تخليقي", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 63, type: "عبوة", brand: "ارمادا", grade: "10w30", spec: "تخليقي", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 64, type: "عبوة", brand: "ارمادا", grade: "سائل تبريد 30%", spec: "ماء ردياتير", size: "4لتر", icon: "fa-temperature-arrow-down" },
+            { id: 65, type: "عبوة", brand: "ارمادا", grade: "20w50", spec: "SL", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 66, type: "عبوة", brand: "ارمادا", grade: "10w40", spec: "SL", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 67, type: "عبوة", brand: "ارمادا", grade: "4000ATF", spec: "زيت هيدروليك/فتيس", size: "1لتر", icon: "fa-flask" },
+            { id: 68, type: "عبوة", brand: "ارمادا", grade: "مانع تجمد 100%", spec: "ركاز", size: "1لتر", icon: "fa-snowflake" },
+            { id: 69, type: "عبوة", brand: "ارمادا", grade: "10w40", spec: "SL", size: "3لتر", icon: "fa-bottle-water" },
+            { id: 70, type: "عبوة", brand: "ارمادا", grade: "20w50", spec: "SL", size: "3لتر", icon: "fa-bottle-water" },
+            { id: 71, type: "عبوة", brand: "ارمادا", grade: "50", spec: "عادي", size: "5لتر", icon: "fa-bottle-water" },
+            { id: 72, type: "عبوة", brand: "ارمادا", grade: "15w40", spec: "CF4", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 73, type: "عبوة", brand: "ارمادا", grade: "15w40", spec: "CI4", size: "5لتر", icon: "fa-bottle-water" },
+            { id: 74, type: "عبوة", brand: "فوكس", grade: "10w40", spec: "SL", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 75, type: "عبوة", brand: "فوكس", grade: "20w50", spec: "SL", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 76, type: "عبوة", brand: "يوروتيك", grade: "10w40", spec: "CF4/SG", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 77, type: "عبوة", brand: "يوروتيك", grade: "20w50", spec: "CF4/SG", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 78, type: "عبوة", brand: "يوروتيك", grade: "5w30", spec: "SP-GF/6A", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 79, type: "عبوة", brand: "يوروتيك", grade: "10w40", spec: "SN/CF", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 80, type: "عبوة", brand: "يوروتيك", grade: "مانع تجمد 100%", spec: "G11", size: "4لتر", icon: "fa-snowflake" },
+            { id: 81, type: "عبوة", brand: "يوروتيك", grade: "10w30", spec: "CI4", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 82, type: "عبوة", brand: "يوروتيك", grade: "10w40", spec: "CI4", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 83, type: "عبوة", brand: "يوروتيك", grade: "15w40", spec: "CI4", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 84, type: "عبوة", brand: "يوروتيك", grade: "5w20", spec: "SN/CF", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 85, type: "عبوة", brand: "يوروتيك", grade: "0w20", spec: "SP-GF/6A", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 86, type: "عبوة", brand: "يوروتيك", grade: "5w40", spec: "CI4", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 87, type: "عبوة", brand: "يوروتيك", grade: "10w40", spec: "CK-4", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 88, type: "عبوة", brand: "يوروتيك", grade: "5w30", spec: "CI4/SL", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 89, type: "عبوة", brand: "يوروتيك", grade: "5w30", spec: "CK-4", size: "6لتر", icon: "fa-bottle-water" },
+            { id: 90, type: "عبوة", brand: "يوروتيك", grade: "10w40", spec: "CI4", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 91, type: "عبوة", brand: "يوروتيك", grade: "20w50", spec: "CI4", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 92, type: "عبوة", brand: "يوروتيك", grade: "10w30", spec: "CI4", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 93, type: "عبوة", brand: "يوروتيك", grade: "0w20", spec: "A6/GF", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 94, type: "عبوة", brand: "يوروتيك", grade: "15w40", spec: "CI4", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 95, type: "عبوة", brand: "يوروتيك", grade: "5w20", spec: "CF/SN", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 96, type: "عبوة", brand: "يوروتيك", grade: "5w30", spec: "CI4", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 97, type: "عبوة", brand: "يوروتيك", grade: "5w40", spec: "CI4", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 98, type: "عبوة", brand: "يوروتيك", grade: "CVT", spec: "ATF فتيس", size: "1لتر", icon: "fa-gear" },
+            { id: 99, type: "عبوة", brand: "يوروتيك", grade: "DX/VI", spec: "أوتوماتيك", size: "1لتر", icon: "fa-gear" },
+            { id: 100, type: "عبوة", brand: "يوروتيك", grade: "ديكسرون H", spec: "أوتوماتيك", size: "1لتر", icon: "fa-gear" },
+            { id: 101, type: "عبوة", brand: "يوروتيك", grade: "10w40", spec: "T4", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 102, type: "عبوة", brand: "يوروتيك", grade: "2t", spec: "دراجات", size: "1لتر", icon: "fa-motorcycle" },
+            { id: 103, type: "عبوة", brand: "QPCX", grade: "20w50", spec: "معياري", size: "800g", icon: "fa-bottle-water" },
+            { id: 104, type: "عبوة", brand: "QPCX", grade: "40", spec: "معياري", size: "800g", icon: "fa-bottle-water" },
+            { id: 105, type: "عبوة", brand: "سوبر نيفون", grade: "80W90", spec: "تروس", size: "800g", icon: "fa-gears" },
+            { id: 106, type: "عبوة", brand: "سوبر نيفون", grade: "140", spec: "تروس", size: "800g", icon: "fa-gears" },
+            { id: 107, type: "عبوة", brand: "سوبر نيفون", grade: "10W40", spec: "محرك", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 108, type: "عبوة", brand: "سوبر نيفون", grade: "20W50", spec: "محرك", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 109, type: "عبوة", brand: "اكس سبيد", grade: "5W30", spec: "SN", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 110, type: "عبوة", brand: "اكس سبيد", grade: "15W40", spec: "CF4/SL", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 111, type: "عبوة", brand: "اكس سبيد", grade: "20W50", spec: "CF4/SL", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 112, type: "عبوة", brand: "اكس سبيد", grade: "10W40", spec: "CF4/SL", size: "4لتر", icon: "fa-bottle-water" },
+            { id: 113, type: "عبوة", brand: "اكس سبيد", grade: "20W50", spec: "SF4-SL", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 114, type: "عبوة", brand: "اكس سبيد", grade: "10W40", spec: "CF4/SL", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 115, type: "عبوة", brand: "اكس سبيد", grade: "5W30", spec: "SN", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 116, type: "عبوة", brand: "اكس سبيد", grade: "15W40", spec: "CF4/SL", size: "1لتر", icon: "fa-bottle-water" },
+            { id: 117, type: "عبوة", brand: "جيري فليكس", grade: "تزييت بالنقطة", spec: "خاص", size: "4لتر", icon: "fa-droplet" },
+            { id: 118, type: "عبوة", brand: "المقود", grade: "هيدروليك", spec: "باور", size: "800g", icon: "fa-dharmachakra" },
+            { id: 119, type: "عبوة", brand: "QPCX", grade: "هيدروليك", spec: "باور", size: "800g", icon: "fa-dharmachakra" },
+            { id: 120, type: "فرام", brand: "STP", grade: "صغير", spec: "DOT4", size: "250g", icon: "fa-triangle-exclamation" },
+            { id: 121, type: "فرام", brand: "STP", grade: "كبير", spec: "DOT4", size: "400g", icon: "fa-triangle-exclamation" },
+            { id: 122, type: "فرام", brand: "فرام 21", grade: "صغير", spec: "DOT3", size: "250g", icon: "fa-triangle-exclamation" },
+            { id: 123, type: "فرام", brand: "فرام 21", grade: "كبير", spec: "DOT3", size: "400g", icon: "fa-triangle-exclamation" },
+            { id: 124, type: "شحم", brand: "فوكس", grade: "سطل شحم حراري", spec: "حراري", size: "15Kg", icon: "fa-jar" },
+            { id: 125, type: "شحم", brand: "فوكس", grade: "سطل شحم MP3", spec: "احمر", size: "15Kg", icon: "fa-jar" },
+            { id: 126, type: "شحم", brand: "فوكس", grade: "علبة شحم حراري", spec: "حراري", size: "400g", icon: "fa-box-archive" },
+            { id: 127, type: "شحم", brand: "فوكس", grade: "علبة شحم حراري", spec: "حراري", size: "800g", icon: "fa-box-archive" },
+            { id: 128, type: "شحم", brand: "ارمادا", grade: "برميل شحم", spec: "MP3", size: "برميل", icon: "fa-drum" },
+            { id: 129, type: "شحم", brand: "اكس سبيد", grade: "سطل شحم", spec: "معياري", size: "12Kg", icon: "fa-jar" },
+            { id: 130, type: "شحم", brand: "ايبلا", grade: "علبة شحم", spec: "معياري", size: "1Kg", icon: "fa-box-archive" }
+        ];
+
+        // 3. TRANSLATION DICTIONARIES (UI + PRODUCTS)
+        const dictType = { "كالون": "Gallon", "برميل": "Drum", "عبوة": "Bottle", "فرام": "Brake Fluid", "شحم": "Grease" };
+        const dictBrand = {
+            "اكس سبيد": "X-Speed", "يوروتيك": "EuroTech", "ارمادا": "Armada", "نيفون": "Nifon",
+            "سوبر نيفون": "Super Nifon", "فوكس": "Fuchs", "جيري فليكس": "Jerry Flex",
+            "مكررWX": "Refined WX", "المقود": "Al-Meqwad", "فرام 21": "Brake 21", "ايبلا": "Ebla", "STP": "STP", "QPCX": "QPCX"
+        };
+        const dictGrade = {
+            "تزييت بالنقطة": "Drop Lubrication", "منظف بيئة": "DPF / Eco Cleaner", "مسننات": "Gear Oil",
+            "هيدروليك": "Hydraulic", "واو": "Waw Oil", "عام": "General", "سائل تبريد 30%": "Coolant 30%",
+            "مانع تجمد 100%": "Antifreeze 100%", "ديكسرون H": "Dexron H", "صغير": "Small", "كبير": "Large",
+            "سطل شحم حراري": "Thermal Grease Bucket", "سطل شحم MP3": "MP3 Grease Bucket",
+            "علبة شحم حراري": "Thermal Grease Box", "برميل شحم": "Grease Drum", "سطل شحم": "Grease Bucket", "علبة شحم": "Grease Box"
+        };
+        const dictSpec = {
+            "تروس": "Gear", "خاص": "Special", "إضافة": "Additive", "صناعي": "Industrial", "عام": "General",
+            "مكرر": "Refined", "تخليقي": "Synthetic", "ماء ردياتير": "Radiator Coolant", "زيت هيدروليك/فتيس": "ATF / Hydraulic",
+            "ركاز": "Concentrate", "عادي": "Regular", "ATF فتيس": "ATF Gear", "أوتوماتيك": "Automatic",
+            "دراجات": "Motorcycle 2T", "معياري": "Standard", "محرك": "Engine", "باور": "Power Steering",
+            "حراري": "Thermal", "احمر": "Red", "قياسي": "Standard"
+        };
+
+        function translateSize(s) {
+            return String(s || '').replace('لتر', 'L').replace('برميل', 'Drum');
+        }
+
+        function enrichProductBilingual(p) {
+            return {
+                id: p.id,
+                type_ar: p.type_ar || p.type,
+                type_en: p.type_en || dictType[p.type_ar || p.type] || p.type,
+                brand_ar: p.brand_ar || p.brand,
+                brand_en: p.brand_en || dictBrand[p.brand_ar || p.brand] || p.brand,
+                grade_ar: p.grade_ar || p.grade,
+                grade_en: p.grade_en || dictGrade[p.grade_ar || p.grade] || p.grade,
+                spec_ar: p.spec_ar || p.spec || 'قياسي',
+                spec_en: p.spec_en || dictSpec[p.spec_ar || p.spec] || p.spec || 'Standard',
+                size_ar: p.size_ar || p.size,
+                size_en: p.size_en || translateSize(p.size_ar || p.size),
+                icon: p.icon || 'fa-oil-can',
+                image_url: p.image_url || null,
+                price: Number(p.price || 0),
+                is_available: p.is_available !== undefined ? p.is_available : true
+            };
+        }
+
+        const i18nUI = {
+            ar: {
+                storeName: "متجر ماهر حسن", storeBadge: "لزيوت المحركات",
+                storeSub: "أجود أنواع الزيوت والشحوم الصناعية والمحركات",
+                adminBtn: "لوحة التحكم", myOrdersBtn: "طلباتي", loginBtn: "دخول / حساب", logoutBtn: "خروج",
+                cartBtn: "السلة", heroBadge: "منتجات أصلية 100% ومضمونة",
+                heroTitle: "المتجر المتكامل لزيوت السيارات والمحركات",
+                heroDesc: "تصفح كتالوج الزيوت الكالونات، البراميل، العبوات، والفرامل والشحوم. اختر المنتجات وطريقة الدفع المناسبة وأرسل طلبك بسهولة.",
+                searchLabel: "بحث سريع", searchPlaceholder: "ابحث باسم المنتج، العيار، أو النوع...",
+                typeLabel: "نوع القطعة / العبوة", allTypes: "جميع التعبئات",
+                typeGallon: "كالون (20 لتر)", typeDrum: "برميل (180 لتر / 60 لتر)",
+                typeBottle: "عبوة (1 لتر / 4 لتر / 6 لتر)", typeBrake: "زيت فرام", typeGrease: "شحوم (سطل / علبة)",
+                brandLabel: "الشركة المصنعة / الماركة", allBrands: "جميع الماركات", otherBrands: "علامات تجارية أخرى",
+                sortLabel: "ترتيب العرض", sortDefault: "الافتراضي", sortName: "حسب الاسم",
+                sortPriceAsc: "السعر: من الأقل للأعلى", sortPriceDesc: "السعر: من الأعلى للأقل",
+                foundItems: "عدد المنتجات المعروضة:", resetFilters: "إعادة ضبط الفلاتر",
+                noResultsTitle: "لم يتم العثور على أي منتج",
+                specLabel: "المواصفة:", availableNow: "متوفر الآن", outOfStock: "غير متوفر",
+                addToCart: "إضافة للسلة", priceOnRequest: "السعر حسب الطلب", currency: "ل.س",
+                cartTitle: "سلة الطلبيات", cartSub: "مراجعة المنتجات وإتمام الطلب",
+                custInfoTitle: "معلومات العميل والدفع", paymentMethodLabel: "طريقة الدفع",
+                totalItemsLabel: "إجمالي القطع:", totalPriceLabel: "إجمالي الفاتورة:",
+                sendOrderBtn: "تأكيد الطلب وإرساله", contactUs: "تواصل معنا",
+                footerAbout: "نوفر لكم أجود وأفضل أنواع زيوت السيارات والمحركات والهيدروليك والتروس والشحوم الصناعية بكافة السعات.",
+                qualityTitle: "الضمان وطرق الدفع",
+                qualityDesc: "ندعم الدفع نقداً عند الاستلام، سيريتيل كاش، شام كاش، الحوالات البنكية والهرم، وبطاقات فيزا وماستر كارد."
+            },
+            en: {
+                storeName: "Maher Hassan Store", storeBadge: "Motor Oils",
+                storeSub: "Premium Engine Oils, Hydraulic Oils & Industrial Greases",
+                adminBtn: "Admin Panel", myOrdersBtn: "My Orders", loginBtn: "Login / Register", logoutBtn: "Logout",
+                cartBtn: "Cart", heroBadge: "100% Genuine & Guaranteed Products",
+                heroTitle: "Complete Catalog for Automotive & Engine Oils",
+                heroDesc: "Browse gallons, drums, bottles, brake fluids, and greases. Select your items, choose your payment method, and place your order seamlessly.",
+                searchLabel: "Quick Search", searchPlaceholder: "Search by brand, grade, or spec...",
+                typeLabel: "Packaging Type", allTypes: "All Packaging",
+                typeGallon: "Gallon (20L)", typeDrum: "Drum (180L / 60L)",
+                typeBottle: "Bottle (1L / 4L / 6L)", typeBrake: "Brake Fluid", typeGrease: "Grease (Bucket / Box)",
+                brandLabel: "Brand / Manufacturer", allBrands: "All Brands", otherBrands: "Other Brands",
+                sortLabel: "Sort By", sortDefault: "Default", sortName: "By Name",
+                sortPriceAsc: "Price: Low to High", sortPriceDesc: "Price: High to Low",
+                foundItems: "Products shown:", resetFilters: "Reset Filters",
+                noResultsTitle: "No matching products found",
+                specLabel: "Spec:", availableNow: "In Stock", outOfStock: "Out of Stock",
+                addToCart: "Add to Cart", priceOnRequest: "Price on Request", currency: "SYP",
+                cartTitle: "Shopping Cart", cartSub: "Review items & complete your order",
+                custInfoTitle: "Customer & Payment Details", paymentMethodLabel: "Payment Method",
+                totalItemsLabel: "Total Items:", totalPriceLabel: "Total Amount:",
+                sendOrderBtn: "Confirm & Send Order", contactUs: "Contact Us",
+                footerAbout: "Providing top-quality automotive, engine, hydraulic, gear oils, and industrial greases in all sizes.",
+                qualityTitle: "Warranty & Payment Methods",
+                qualityDesc: "We accept Cash on Delivery, Syriatel Cash, Sham Cash, Bank/Al-Haram Transfers, and Visa/MasterCard."
+            }
+        };
+
+        // 4. APPLICATION STATE
+        let currentLang = localStorage.getItem('maher_lang') || 'ar';
+        let productsList = rawInitialProducts.map(enrichProductBilingual);
+        let filteredProducts = [...productsList];
+        let cart = JSON.parse(localStorage.getItem('maher_cart') || '[]');
+        let paymentMethods = [];
+        let currentUser = null;
+        let currentProfile = null;
+        let authMode = 'login';
+
+        // 5. INITIALIZATION
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            applyLanguageUI();
+            updateCartBadge();
+
+            await checkSessionAndProfile();
+            await loadProductsFromSupabase();
+            await loadPaymentMethodsFromSupabase();
+
+            supabaseClient.auth.onAuthStateChange(async () => {
+                await checkSessionAndProfile();
+            });
+        });
+
+        // 6. LANGUAGE SWITCHING
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('maher_lang', currentLang);
+            applyLanguageUI();
+            applyFilters();
+            renderPaymentSelect();
+            renderCartModal();
+        }
+
+        function applyLanguageUI() {
+            const root = document.getElementById('htmlRoot');
+            root.lang = currentLang;
+            root.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langBtnText').textContent = currentLang === 'ar' ? 'EN' : 'عربي';
+
+            const t = i18nUI[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+            updateAuthUI();
+        }
+
+        // 7. LOAD DATA FROM SUPABASE
+        async function loadProductsFromSupabase() {
+            const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: true });
+            if (!error && data && data.length > 0) {
+                productsList = data.map(enrichProductBilingual);
+            } else {
+                productsList = rawInitialProducts.map(enrichProductBilingual);
+            }
+            applyFilters();
+        }
+
+        async function loadPaymentMethodsFromSupabase() {
+            const { data, error } = await supabaseClient.from('payment_methods').select('*').order('id', { ascending: true });
+            if (!error && data && data.length > 0) {
+                paymentMethods = data;
+            } else {
+                paymentMethods = [
+                    { id: 1, code: 'cod', name_ar: 'الدفع نقداً عند الاستلام', name_en: 'Cash on Delivery', details_ar: 'الدفع مباشرة عند استلام البضاعة', details_en: 'Pay upon delivery', requires_receipt: false, is_active: true },
+                    { id: 2, code: 'syriatel_cash', name_ar: 'سيريتيل كاش (Syriatel Cash)', name_en: 'Syriatel Cash', details_ar: 'التحويل إلى رقم التاجر: 0988996382 وإدخال رقم العملية', details_en: 'Transfer to 0988996382 and enter transaction ID', requires_receipt: true, is_active: true },
+                    { id: 3, code: 'sham_cash', name_ar: 'شام كاش (Sham Cash)', name_en: 'Sham Cash', details_ar: 'التحويل إلى حساب شام كاش وإدخال رقم الإشعار', details_en: 'Transfer via Sham Cash and enter reference ID', requires_receipt: true, is_active: true },
+                    { id: 4, code: 'bank', name_ar: 'حوالة بنكية / الهرم', name_en: 'Bank Transfer / Al-Haram', details_ar: 'يرجى كتابة رقم الحوالة أو الإشعار لتأكيد الطلب', details_en: 'Enter receipt number to confirm order', requires_receipt: true, is_active: true },
+                    { id: 5, code: 'card', name_ar: 'بطاقة فيزا / ماستر كارد', name_en: 'Visa / MasterCard', details_ar: 'سيتم إرسال رابط الدفع الإلكتروني الآمن فور تأكيد الطلب', details_en: 'Secure payment link will be sent upon confirmation', requires_receipt: false, is_active: true }
+                ];
+            }
+            renderPaymentSelect();
+        }
+
+        function renderPaymentSelect() {
+            const select = document.getElementById('paymentMethodSelect');
+            const activeMethods = paymentMethods.filter(m => m.is_active);
+            select.innerHTML = activeMethods.map(m => `
+                <option value="${m.id}">${currentLang === 'ar' ? m.name_ar : m.name_en}</option>
+            `).join('');
+            onPaymentMethodChange();
+        }
+
+        function onPaymentMethodChange() {
+            const selectedId = Number(document.getElementById('paymentMethodSelect').value);
+            const method = paymentMethods.find(m => m.id === selectedId);
+            const infoBox = document.getElementById('paymentInstructionsBox');
+            const refContainer = document.getElementById('paymentRefContainer');
+
+            if (!method) return;
+            const details = currentLang === 'ar' ? method.details_ar : method.details_en;
+            if (details) {
+                infoBox.textContent = details;
+                infoBox.classList.remove('hidden');
+            } else {
+                infoBox.classList.add('hidden');
+            }
+
+            if (method.requires_receipt) {
+                refContainer.classList.remove('hidden');
+            } else {
+                refContainer.classList.add('hidden');
+            }
+        }
+
+        // 8. CATALOG RENDERING & FILTERS
+        function renderCatalog(items) {
+            const container = document.getElementById('catalogGrid');
+            const noResults = document.getElementById('noResults');
+            document.getElementById('itemsCount').textContent = items.length;
+            const t = i18nUI[currentLang];
+
+            if (items.length === 0) {
+                container.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+
+            container.innerHTML = items.map(product => {
+                const inCart = cart.find(i => i.id === product.id);
+                const cartQty = inCart ? inCart.qty : 0;
+
+                const typeText = currentLang === 'ar' ? product.type_ar : product.type_en;
+                const brandText = currentLang === 'ar' ? product.brand_ar : product.brand_en;
+                const gradeText = currentLang === 'ar' ? product.grade_ar : product.grade_en;
+                const specText = currentLang === 'ar' ? product.spec_ar : product.spec_en;
+                const sizeText = currentLang === 'ar' ? product.size_ar : product.size_en;
+
+                let badgeBg = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                if (product.type_ar === "برميل") badgeBg = "bg-purple-500/10 text-purple-400 border-purple-500/30";
+                if (product.type_ar === "عبوة") badgeBg = "bg-blue-500/10 text-blue-400 border-blue-500/30";
+                if (product.type_ar === "فرام") badgeBg = "bg-red-500/10 text-red-400 border-red-500/30";
+                if (product.type_ar === "شحم") badgeBg = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+
+                const priceDisplay = product.price > 0
+                    ? `<span class="text-amber-400 font-black text-sm">${Number(product.price).toLocaleString()} ${t.currency}</span>`
+                    : `<span class="text-slate-400 text-xs font-bold">${t.priceOnRequest}</span>`;
+
+                return `
+                    <div class="bg-slate-800/90 border border-slate-700/80 hover:border-amber-500/50 rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 shadow-lg group">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="text-xs font-bold px-2.5 py-1 rounded-lg border ${badgeBg}">${typeText}</span>
+                                <span class="text-xs font-extrabold text-slate-300 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-lg">${sizeText}</span>
+                            </div>
+
+                            ${product.image_url ? `
+                                <div class="w-full h-40 bg-slate-900 rounded-xl mb-3 overflow-hidden border border-slate-700/60 flex items-center justify-center">
+                                    <img src="${product.image_url}" alt="${brandText}" class="h-full w-full object-contain p-2">
+                                </div>
+                            ` : ''}
+
+                            <div class="flex items-start gap-3 my-2">
+                                <div class="w-10 h-10 bg-slate-900 rounded-xl border border-slate-700/80 flex items-center justify-center text-amber-400 flex-shrink-0 group-hover:bg-amber-500 group-hover:text-slate-950 transition">
+                                    <i class="fa-solid ${product.icon} text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition leading-snug">
+                                        ${brandText} - ${gradeText}
+                                    </h3>
+                                    <p class="text-xs text-slate-400 mt-0.5">${t.specLabel} <span class="text-slate-200 font-semibold">${specText}</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-700/60 space-y-2">
+                            <div class="flex items-center justify-between">
+                                ${priceDisplay}
+                                <span class="text-[11px] font-bold ${product.is_available ? 'text-emerald-400' : 'text-red-400'}">
+                                    ${product.is_available ? t.availableNow : t.outOfStock}
+                                </span>
+                            </div>
+                            <button ${!product.is_available ? 'disabled' : ''} onclick="addToCart(${product.id})" class="w-full ${product.is_available ? 'bg-amber-500 hover:bg-amber-400 text-slate-950' : 'bg-slate-700 text-slate-500 cursor-not-allowed'} font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition">
+                                <i class="fa-solid fa-cart-plus"></i>
+                                <span>${t.addToCart}</span>
+                                ${cartQty > 0 ? `<span class="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.5 rounded-full font-black">${cartQty}</span>` : ''}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function applyFilters() {
+            const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+            const typeVal = document.getElementById('typeFilter').value;
+            const brandVal = document.getElementById('brandFilter').value;
+            const sortVal = document.getElementById('sortFilter').value;
+
+            filteredProducts = productsList.filter(item => {
+                const matchSearch =
+                    item.brand_ar.toLowerCase().includes(searchVal) ||
+                    item.brand_en.toLowerCase().includes(searchVal) ||
+                    item.grade_ar.toLowerCase().includes(searchVal) ||
+                    item.grade_en.toLowerCase().includes(searchVal) ||
+                    item.spec_ar.toLowerCase().includes(searchVal) ||
+                    item.spec_en.toLowerCase().includes(searchVal) ||
+                    item.size_ar.toLowerCase().includes(searchVal);
+
+                const matchType = (typeVal === 'ALL') || (item.type_ar === typeVal);
+
+                let matchBrand = true;
+                if (brandVal !== 'ALL') {
+                    if (brandVal === 'أخرى') {
+                        const known = ['اكس سبيد', 'يوروتيك', 'ارمادا', 'نيفون', 'فوكس', 'جيري فليكس', 'STP'];
+                        matchBrand = !known.some(k => item.brand_ar.includes(k));
+                    } else {
+                        matchBrand = item.brand_ar.includes(brandVal);
+                    }
+                }
+                return matchSearch && matchType && matchBrand;
+            });
+
+            if (sortVal === 'name') {
+                filteredProducts.sort((a, b) => a.brand_ar.localeCompare(b.brand_ar, 'ar'));
+            } else if (sortVal === 'priceAsc') {
+                filteredProducts.sort((a, b) => a.price - b.price);
+            } else if (sortVal === 'priceDesc') {
+                filteredProducts.sort((a, b) => b.price - a.price);
+            }
+            renderCatalog(filteredProducts);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = 'ALL';
+            document.getElementById('brandFilter').value = 'ALL';
+            document.getElementById('sortFilter').value = 'default';
+            applyFilters();
+        }
+
+        // 9. CART & ORDER SUBMISSION (SUPABASE + WHATSAPP)
+        function saveCart() {
+            localStorage.setItem('maher_cart', JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function addToCart(productId) {
+            const product = productsList.find(p => p.id === productId);
+            if (!product || !product.is_available) return;
+
+            const existing = cart.find(i => i.id === productId);
+            if (existing) existing.qty += 1;
+            else cart.push({ ...product, qty: 1 });
+
+            saveCart();
+            renderCatalog(filteredProducts);
+            renderCartModal();
+            const title = currentLang === 'ar' ? `${product.brand_ar} ${product.grade_ar}` : `${product.brand_en} ${product.grade_en}`;
+            showToast(currentLang === 'ar' ? `تمت إضافة "${title}" للسلة` : `Added "${title}" to cart`);
+        }
+
+        function updateCartQty(productId, change) {
+            const idx = cart.findIndex(i => i.id === productId);
+            if (idx > -1) {
+                cart[idx].qty += change;
+                if (cart[idx].qty <= 0) cart.splice(idx, 1);
+            }
+            saveCart();
+            renderCatalog(filteredProducts);
+            renderCartModal();
+        }
+
+        function clearCart() {
+            cart = [];
+            saveCart();
+            renderCatalog(filteredProducts);
+            renderCartModal();
+        }
+
+        function updateCartBadge() {
+            const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+            const totalPrice = cart.reduce((sum, i) => sum + (Number(i.price || 0) * i.qty), 0);
+            document.getElementById('cartCountBadge').textContent = totalQty;
+            document.getElementById('cartTotalItems').textContent = totalQty;
+            document.getElementById('cartTotalPrice').textContent = `${totalPrice.toLocaleString()} ${i18nUI[currentLang].currency}`;
+        }
+
+        function toggleCartModal(show) {
+            const modal = document.getElementById('cartModal');
+            if (show) {
+                renderCartModal();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function renderCartModal() {
+            const container = document.getElementById('cartItemsContainer');
+            updateCartBadge();
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500 font-bold">${currentLang === 'ar' ? 'سلة الطلبات فارغة' : 'Your cart is empty'}</div>`;
+                return;
+            }
+            container.innerHTML = cart.map(item => `
+                <div class="bg-slate-800 border border-slate-700/80 rounded-2xl p-3 flex items-center justify-between gap-2">
+                    <div>
+                        <h4 class="font-bold text-xs text-white">${currentLang === 'ar' ? item.brand_ar + ' ' + item.grade_ar : item.brand_en + ' ' + item.grade_en}</h4>
+                        <p class="text-[11px] text-slate-400">${currentLang === 'ar' ? item.type_ar + ' | ' + item.size_ar : item.type_en + ' | ' + item.size_en}</p>
+                        ${item.price > 0 ? `<p class="text-[11px] text-amber-400 font-bold">${(item.price * item.qty).toLocaleString()} ${i18nUI[currentLang].currency}</p>` : ''}
+                    </div>
+                    <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
+                        <button onclick="updateCartQty(${item.id}, 1)" class="px-2.5 py-1 text-slate-300 hover:bg-slate-700 font-bold">+</button>
+                        <span class="px-2.5 text-xs font-extrabold text-amber-400">${item.qty}</span>
+                        <button onclick="updateCartQty(${item.id}, -1)" class="px-2.5 py-1 text-slate-300 hover:bg-slate-700 font-bold">-</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function submitOrder() {
+            if (cart.length === 0) return alert(currentLang === 'ar' ? 'السلة فارغة!' : 'Cart is empty!');
+
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+            const notes = document.getElementById('custNotes').value.trim();
+            const payId = Number(document.getElementById('paymentMethodSelect').value);
+            const method = paymentMethods.find(m => m.id === payId);
+            const payRef = document.getElementById('paymentRefInput').value.trim();
+
+            if (!name || !phone || !address) {
+                return alert(currentLang === 'ar' ? 'يرجى ملء الاسم، الهاتف، والعنوان.' : 'Please fill in Name, Phone, and Address.');
+            }
+            if (method && method.requires_receipt && !payRef) {
+                return alert(currentLang === 'ar' ? 'يرجى إدخال رقم عملية التحويل / الإشعار.' : 'Please enter the payment transaction reference.');
+            }
+
+            const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+            const totalPrice = cart.reduce((sum, i) => sum + (Number(i.price || 0) * i.qty), 0);
+            const paymentName = method ? method.name_ar : 'الدفع عند الاستلام';
+
+            // 1. Save Order to Supabase Sales Log
+            const orderPayload = {
+                user_id: currentUser ? currentUser.id : null,
+                customer_name: name,
+                customer_phone: phone,
+                customer_address: address,
+                customer_notes: notes,
+                payment_method_name: paymentName,
+                payment_reference: payRef || null,
+                items: cart,
+                total_qty: totalQty,
+                total_price: totalPrice,
+                status: 'جديد'
+            };
+
+            await supabaseClient.from('orders').insert([orderPayload]);
+
+            // 2. Send Order via WhatsApp
+            let msg = `*طلب جديد - متجر ماهر حسن لزيوت المحركات*%0A%0A`;
+            msg += `👤 *العميل:* ${name}%0A`;
+            msg += `📞 *الهاتف:* ${phone}%0A`;
+            msg += `📍 *العنوان:* ${address}%0A`;
+            msg += `💳 *طريقة الدفع:* ${paymentName}%0A`;
+            if (payRef) msg += `🧾 *رقم الإشعار/العملية:* ${payRef}%0A`;
+            if (notes) msg += `📝 *ملاحظات:* ${notes}%0A`;
+            msg += `%0A*المواد المطلوبة:*%0A`;
+            cart.forEach((item, i) => {
+                msg += `${i + 1}. *${item.brand_ar} - ${item.grade_ar}* (${item.type_ar} ${item.size_ar}) × *${item.qty}*%0A`;
+            });
+            msg += `%0A📦 *إجمالي القطع:* ${totalQty}`;
+            if (totalPrice > 0) msg += `%0A💰 *إجمالي الفاتورة:* ${totalPrice.toLocaleString()} ل.س`;
+
+            clearCart();
+            toggleCartModal(false);
+            showToast(currentLang === 'ar' ? 'تم تسجيل الطلب بنجاح!' : 'Order placed successfully!');
+            window.open(`https://wa.me/963988996382?text=${msg}`, '_blank');
+        }
+
+        // 10. AUTHENTICATION & USER PROFILES
+        async function checkSessionAndProfile() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            currentUser = session ? session.user : null;
+
+            if (currentUser) {
+                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
+                currentProfile = profile;
+                if (profile) {
+                    document.getElementById('custName').value = profile.full_name || '';
+                    document.getElementById('custPhone').value = profile.phone || '';
+                    document.getElementById('custAddress').value = profile.address || '';
+                }
+            } else {
+                currentProfile = null;
+            }
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            const adminBtn = document.getElementById('adminPanelBtn');
+            const myOrdersBtn = document.getElementById('myOrdersBtn');
+            const authBtnText = document.getElementById('authBtnText');
+
+            if (currentUser) {
+                authBtnText.textContent = currentProfile?.full_name?.split(' ')[0] || i18nUI[currentLang].logoutBtn;
+                myOrdersBtn.classList.remove('hidden');
+                myOrdersBtn.classList.add('flex');
+                if (currentProfile && currentProfile.role === 'admin') {
+                    adminBtn.classList.remove('hidden');
+                    adminBtn.classList.add('flex');
+                } else {
+                    adminBtn.classList.add('hidden');
+                }
+            } else {
+                authBtnText.textContent = i18nUI[currentLang].loginBtn;
+                myOrdersBtn.classList.add('hidden');
+                adminBtn.classList.add('hidden');
+            }
+        }
+
+        function handleAuthClick() {
+            if (currentUser) {
+                if (confirm(currentLang === 'ar' ? 'هل تريد تسجيل الخروج من حسابك؟' : 'Do you want to log out?')) {
+                    supabaseClient.auth.signOut();
+                }
+            } else {
+                document.getElementById('authModal').classList.remove('hidden');
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            const regFields = document.getElementById('registerFields');
+            const loginTab = document.getElementById('tabLoginBtn');
+            const regTab = document.getElementById('tabRegisterBtn');
+            const submitBtn = document.getElementById('authSubmitBtn');
+
+            if (mode === 'register') {
+                regFields.classList.remove('hidden');
+                regTab.className = "py-2 rounded-lg text-xs font-bold bg-amber-500 text-slate-950";
+                loginTab.className = "py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white";
+                submitBtn.textContent = "إنشاء الحساب";
+            } else {
+                regFields.classList.add('hidden');
+                loginTab.className = "py-2 rounded-lg text-xs font-bold bg-amber-500 text-slate-950";
+                regTab.className = "py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white";
+                submitBtn.textContent = "تسجيل الدخول";
+            }
+        }
+
+        async function submitAuthForm(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+
+            if (authMode === 'register') {
+                const fullName = document.getElementById('regName').value.trim();
+                const phone = document.getElementById('regPhone').value.trim();
+                const address = document.getElementById('regAddress').value.trim();
+                if (!fullName || !phone) return alert('يرجى إدخال الاسم ورقم الهاتف');
+
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email, password,
+                    options: { data: { full_name: fullName, phone, address } }
+                });
+                if (error) return alert(error.message);
+                if (data.user) {
+                    await supabaseClient.from('profiles').upsert({
+                        id: data.user.id, full_name: fullName, phone, address
+                    });
+                }
+                showToast('تم إنشاء الحساب بنجاح!');
+                closeAuthModal();
+            } else {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) return alert('بيانات الدخول غير صحيحة: ' + error.message);
+                showToast('تم تسجيل الدخول بنجاح!');
+                closeAuthModal();
+            }
+        }
+
+        // 11. CUSTOMER MY ORDERS
+        async function openMyOrdersModal() {
+            document.getElementById('myOrdersModal').classList.remove('hidden');
+            const container = document.getElementById('myOrdersList');
+            container.innerHTML = `<p class="text-center text-slate-400">جاري التحميل...</p>`;
+
+            const { data: orders } = await supabaseClient.from('orders').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-500 py-8">لا توجد طلبات سابقة في حسابك.</p>`;
+                return;
+            }
+            container.innerHTML = orders.map(o => `
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-2">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                        <span class="font-bold text-amber-400 text-xs">#${o.id} - ${new Date(o.created_at).toLocaleDateString('ar-SY')}</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-900 text-emerald-400 border border-emerald-500/30">${o.status}</span>
+                    </div>
+                    <p class="text-xs text-slate-300">طريقة الدفع: <b>${o.payment_method_name}</b> | إجمالي القطع: <b>${o.total_qty}</b></p>
+                    <div class="text-xs text-slate-400 space-y-1">
+                        ${(o.items || []).map(i => `<div>• ${i.brand_ar} ${i.grade_ar} (${i.size_ar}) × ${i.qty}</div>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function closeMyOrdersModal() {
+            document.getElementById('myOrdersModal').classList.add('hidden');
+        }
+
+        // 12. ADMIN DASHBOARD FUNCTIONS
+        let adminOrdersCache = [];
+        let adminCustomersCache = [];
+
+        async function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            await loadAdminData();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function switchAdminTab(tab) {
+            ['orders', 'customers', 'products', 'payments'].forEach(t => {
+                document.getElementById(`admin${t.charAt(0).toUpperCase() + t.slice(1)}Section`).classList.add('hidden');
+                const btn = document.getElementById(`admTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                btn.className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap";
+            });
+            document.getElementById(`admin${tab.charAt(0).toUpperCase() + tab.slice(1)}Section`).classList.remove('hidden');
+            document.getElementById(`admTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).className = "px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-500 text-slate-950 flex items-center gap-2 whitespace-nowrap";
+        }
+
+        async function loadAdminData() {
+            const [ordersRes, custRes] = await Promise.all([
+                supabaseClient.from('orders').select('*').order('created_at', { ascending: false }),
+                supabaseClient.from('profiles').select('*').order('created_at', { ascending: false })
+            ]);
+            adminOrdersCache = ordersRes.data || [];
+            adminCustomersCache = custRes.data || [];
+
+            renderAdminOrders();
+            renderAdminCustomers();
+            renderAdminProducts();
+            renderAdminPayments();
+        }
+
+        function renderAdminOrders() {
+            const statusFilter = document.getElementById('adminOrderStatusFilter').value;
+            const totalRevenue = adminOrdersCache.filter(o => o.status !== 'ملغى').reduce((s, o) => s + Number(o.total_price || 0), 0);
+            const totalSoldItems = adminOrdersCache.filter(o => o.status !== 'ملغى').reduce((s, o) => s + Number(o.total_qty || 0), 0);
+
+            document.getElementById('salesStatsCards').innerHTML = `
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+                    <p class="text-xs text-slate-400">إجمالي الطلبات</p>
+                    <p class="text-2xl font-black text-white mt-1">${adminOrdersCache.length}</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+                    <p class="text-xs text-slate-400">إجمالي القطع المباعة</p>
+                    <p class="text-2xl font-black text-amber-400 mt-1">${totalSoldItems}</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+                    <p class="text-xs text-slate-400">إجمالي قيمة المبيعات</p>
+                    <p class="text-2xl font-black text-emerald-400 mt-1">${totalRevenue.toLocaleString()} ل.س</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+                    <p class="text-xs text-slate-400">العملاء المسجلين</p>
+                    <p class="text-2xl font-black text-purple-400 mt-1">${adminCustomersCache.length}</p>
+                </div>
+            `;
+
+            const list = statusFilter === 'ALL' ? adminOrdersCache : adminOrdersCache.filter(o => o.status === statusFilter);
+            const container = document.getElementById('adminOrdersContainer');
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-500 py-8">لا توجد طلبات مطابقة.</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map(order => `
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                    <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-3">
+                        <div>
+                            <span class="text-amber-400 font-black text-sm">طلب #${order.id}</span>
+                            <span class="text-xs text-slate-400 mr-2">${new Date(order.created_at).toLocaleString('ar-SY')}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select onchange="updateOrderStatus(${order.id}, this.value)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1 text-xs font-bold text-amber-400">
+                                <option value="جديد" ${order.status === 'جديد' ? 'selected' : ''}>جديد</option>
+                                <option value="قيد التجهيز" ${order.status === 'قيد التجهيز' ? 'selected' : ''}>قيد التجهيز</option>
+                                <option value="مكتمل" ${order.status === 'مكتمل' ? 'selected' : ''}>مكتمل</option>
+                                <option value="ملغى" ${order.status === 'ملغى' ? 'selected' : ''}>ملغى</option>
+                            </select>
+                            <button onclick="deleteOrder(${order.id})" class="text-red-400 hover:text-red-300 p-1.5"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="bg-slate-900 p-3 rounded-xl space-y-1">
+                            <p class="text-slate-400 font-bold mb-1">بيانات العميل:</p>
+                            <p class="text-white font-bold"><i class="fa-solid fa-user text-amber-400 ml-1"></i> ${order.customer_name}</p>
+                            <p class="text-slate-300"><i class="fa-solid fa-phone text-emerald-400 ml-1"></i> <a href="tel:${order.customer_phone}" class="underline">${order.customer_phone}</a></p>
+                            <p class="text-slate-300"><i class="fa-solid fa-location-dot text-amber-400 ml-1"></i> ${order.customer_address}</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl space-y-1">
+                            <p class="text-slate-400 font-bold mb-1">تفاصيل الدفع والفاتورة:</p>
+                            <p class="text-white">الوسيلة: <b class="text-amber-400">${order.payment_method_name}</b></p>
+                            ${order.payment_reference ? `<p class="text-emerald-400 font-bold">رقم الإشعار: ${order.payment_reference}</p>` : ''}
+                            <p class="text-slate-300">إجمالي القطع: <b>${order.total_qty}</b> | المبلغ: <b>${Number(order.total_price || 0).toLocaleString()} ل.س</b></p>
+                            ${order.customer_notes ? `<p class="text-amber-300">ملاحظة: ${order.customer_notes}</p>` : ''}
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl space-y-1 max-h-32 overflow-y-auto">
+                            <p class="text-slate-400 font-bold mb-1">المواد المطلوبة:</p>
+                            ${(order.items || []).map(i => `<div class="text-slate-200">• ${i.brand_ar} ${i.grade_ar} (${i.type_ar} ${i.size_ar}) × <b class="text-amber-400">${i.qty}</b></div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            await supabaseClient.from('orders').update({ status }).eq('id', orderId);
+            showToast('تم تحديث حالة الطلب');
+            await loadAdminData();
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm('هل أنت متأكد من حذف هذا الطلب من السجل؟')) return;
+            await supabaseClient.from('orders').delete().eq('id', orderId);
+            await loadAdminData();
+        }
+
+        function renderAdminCustomers() {
+            const container = document.getElementById('adminCustomersContainer');
+            if (adminCustomersCache.length === 0) {
+                container.innerHTML = `<p class="text-slate-500">لا يوجد عملاء مسجلون بعد.</p>`;
+                return;
+            }
+            container.innerHTML = adminCustomersCache.map(c => {
+                const custOrders = adminOrdersCache.filter(o => o.user_id === c.id);
+                return `
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-1.5 text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-white text-sm">${c.full_name}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${c.role === 'admin' ? 'bg-purple-500/20 text-purple-300' : 'bg-amber-500/10 text-amber-400'}">${c.role === 'admin' ? 'مدير' : 'عميل'}</span>
+                        </div>
+                        <p class="text-slate-300"><i class="fa-solid fa-phone text-amber-400 ml-1"></i> ${c.phone || 'غير محدد'}</p>
+                        <p class="text-slate-400"><i class="fa-solid fa-location-dot text-slate-500 ml-1"></i> ${c.address || 'غير محدد'}</p>
+                        <p class="text-emerald-400 font-bold pt-1">عدد الطلبات المسجلة: ${custOrders.length}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ADMIN PRODUCTS MANAGEMENT & SEEDING
+        async function seedInitialProductsToDB() {
+            if (!confirm('سيتم رفع الـ 130 منتج الأساسيين مع ترجمتهم الإنجليزية إلى قاعدة البيانات. هل تريد المتابعة؟')) return;
+            const btn = document.getElementById('seedBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'جاري الرفع...';
+
+            const payload = rawInitialProducts.map(p => {
+                const b = enrichProductBilingual(p);
+                return {
+                    type_ar: b.type_ar, type_en: b.type_en,
+                    brand_ar: b.brand_ar, brand_en: b.brand_en,
+                    grade_ar: b.grade_ar, grade_en: b.grade_en,
+                    spec_ar: b.spec_ar, spec_en: b.spec_en,
+                    size_ar: b.size_ar, size_en: b.size_en,
+                    icon: b.icon, price: 0, is_available: true
+                };
+            });
+
+            const { error } = await supabaseClient.from('products').insert(payload);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>رفع الـ 130 منتج لقاعدة البيانات</span>';
+
+            if (error) return alert('حدث خطأ أثناء الرفع: ' + error.message);
+            showToast('تم رفع الـ 130 منتج بنجاح لقاعدة البيانات!');
+            await loadProductsFromSupabase();
+            renderAdminProducts();
+        }
+
+        function autoFillEnglishProductFields() {
+            const typeAr = document.getElementById('prodTypeAr').value;
+            const brandAr = document.getElementById('prodBrandAr').value.trim();
+            const gradeAr = document.getElementById('prodGradeAr').value.trim();
+            const specAr = document.getElementById('prodSpecAr').value.trim();
+            const sizeAr = document.getElementById('prodSizeAr').value.trim();
+
+            document.getElementById('prodTypeEn').value = dictType[typeAr] || typeAr;
+            if (brandAr) document.getElementById('prodBrandEn').value = dictBrand[brandAr] || brandAr;
+            if (gradeAr) document.getElementById('prodGradeEn').value = dictGrade[gradeAr] || gradeAr;
+            if (specAr) document.getElementById('prodSpecEn').value = dictSpec[specAr] || specAr;
+            if (sizeAr) document.getElementById('prodSizeEn').value = translateSize(sizeAr);
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveProdBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الحفظ...';
+
+            const id = document.getElementById('prodId').value;
+            let imageUrl = document.getElementById('prodExistingImageUrl').value || null;
+            const fileInput = document.getElementById('prodImageFile');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const ext = file.name.split('.').pop();
+                const fileName = `prod_${Date.now()}.${ext}`;
+                const { error: upErr } = await supabaseClient.storage.from('product-images').upload(fileName, file, { upsert: true });
+                if (upErr) {
+                    btn.disabled = false;
+                    btn.textContent = 'حفظ المنتج';
+                    return alert('خطأ برفع الصورة: ' + upErr.message);
+                }
+                const { data: pubUrl } = supabaseClient.storage.from('product-images').getPublicUrl(fileName);
+                imageUrl = pubUrl.publicUrl;
+            }
+
+            const payload = {
+                type_ar: document.getElementById('prodTypeAr').value,
+                type_en: document.getElementById('prodTypeEn').value.trim(),
+                brand_ar: document.getElementById('prodBrandAr').value.trim(),
+                brand_en: document.getElementById('prodBrandEn').value.trim(),
+                grade_ar: document.getElementById('prodGradeAr').value.trim(),
+                grade_en: document.getElementById('prodGradeEn').value.trim(),
+                spec_ar: document.getElementById('prodSpecAr').value.trim() || 'قياسي',
+                spec_en: document.getElementById('prodSpecEn').value.trim() || 'Standard',
+                size_ar: document.getElementById('prodSizeAr').value.trim(),
+                size_en: document.getElementById('prodSizeEn').value.trim(),
+                price: Number(document.getElementById('prodPrice').value || 0),
+                image_url: imageUrl,
+                is_available: document.getElementById('prodAvailable').checked
+            };
+
+            let res;
+            if (id) res = await supabaseClient.from('products').update(payload).eq('id', id);
+            else res = await supabaseClient.from('products').insert([payload]);
+
+            btn.disabled = false;
+            btn.textContent = 'حفظ المنتج';
+
+            if (res.error) return alert('خطأ بالحفظ (تأكد من رفع المنتجات أولاً لقاعدة البيانات): ' + res.error.message);
+            showToast('تم حفظ المنتج بنجاح!');
+            resetProductForm();
+            await loadProductsFromSupabase();
+            renderAdminProducts();
+        }
+
+        function editProduct(id) {
+            const p = productsList.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('prodId').value = p.id;
+            document.getElementById('prodTypeAr').value = p.type_ar;
+            document.getElementById('prodTypeEn').value = p.type_en;
+            document.getElementById('prodBrandAr').value = p.brand_ar;
+            document.getElementById('prodBrandEn').value = p.brand_en;
+            document.getElementById('prodGradeAr').value = p.grade_ar;
+            document.getElementById('prodGradeEn').value = p.grade_en;
+            document.getElementById('prodSpecAr').value = p.spec_ar;
+            document.getElementById('prodSpecEn').value = p.spec_en;
+            document.getElementById('prodSizeAr').value = p.size_ar;
+            document.getElementById('prodSizeEn').value = p.size_en;
+            document.getElementById('prodPrice').value = p.price || 0;
+            document.getElementById('prodExistingImageUrl').value = p.image_url || '';
+            document.getElementById('prodAvailable').checked = p.is_available;
+            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('هل تريد حذف هذا المنتج نهائياً؟')) return;
+            await supabaseClient.from('products').delete().eq('id', id);
+            await loadProductsFromSupabase();
+            renderAdminProducts();
+        }
+
+        function resetProductForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('prodId').value = '';
+            document.getElementById('prodExistingImageUrl').value = '';
+        }
+
+        function renderAdminProducts() {
+            const container = document.getElementById('adminProductsList');
+            container.innerHTML = productsList.map(p => `
+                <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between gap-2 text-xs">
+                    <div class="flex items-center gap-2.5">
+                        ${p.image_url ? `<img src="${p.image_url}" class="w-10 h-10 rounded-lg object-cover border border-slate-700">` : `<div class="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-amber-400"><i class="fa-solid ${p.icon}"></i></div>`}
+                        <div>
+                            <p class="font-bold text-white">${p.brand_ar} - ${p.grade_ar} <span class="text-slate-400">(${p.size_ar})</span></p>
+                            <p class="text-[11px] text-amber-400">${p.price > 0 ? p.price.toLocaleString() + ' ل.س' : 'حسب الطلب'} | ${p.is_available ? 'متوفر' : 'نافذ'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="editProduct(${p.id})" class="bg-slate-800 hover:bg-slate-700 text-amber-400 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteProduct(${p.id})" class="bg-slate-800 hover:bg-slate-700 text-red-400 p-2 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ADMIN PAYMENT METHODS
+        async function savePaymentMethod(e) {
+            e.preventDefault();
+            const id = document.getElementById('payId').value;
+            const payload = {
+                code: document.getElementById('payCode').value.trim(),
+                name_ar: document.getElementById('payNameAr').value.trim(),
+                name_en: document.getElementById('payNameEn').value.trim(),
+                details_ar: document.getElementById('payDetailsAr').value.trim(),
+                details_en: document.getElementById('payDetailsEn').value.trim(),
+                requires_receipt: document.getElementById('payRequiresReceipt').checked,
+                is_active: document.getElementById('payActive').checked
+            };
+
+            if (id) await supabaseClient.from('payment_methods').update(payload).eq('id', id);
+            else await supabaseClient.from('payment_methods').insert([payload]);
+
+            document.getElementById('paymentForm').reset();
+            document.getElementById('payId').value = '';
+            showToast('تم حفظ وسيلة الدفع');
+            await loadPaymentMethodsFromSupabase();
+            renderAdminPayments();
+        }
+
+        function editPaymentMethod(id) {
+            const m = paymentMethods.find(x => x.id === id);
+            if (!m) return;
+            document.getElementById('payId').value = m.id;
+            document.getElementById('payCode').value = m.code;
+            document.getElementById('payNameAr').value = m.name_ar;
+            document.getElementById('payNameEn').value = m.name_en;
+            document.getElementById('payDetailsAr').value = m.details_ar || '';
+            document.getElementById('payDetailsEn').value = m.details_en || '';
+            document.getElementById('payRequiresReceipt').checked = m.requires_receipt;
+            document.getElementById('payActive').checked = m.is_active;
+        }
+
+        async function deletePaymentMethod(id) {
+            if (!confirm('حذف وسيلة الدفع؟')) return;
+            await supabaseClient.from('payment_methods').delete().eq('id', id);
+            await loadPaymentMethodsFromSupabase();
+            renderAdminPayments();
+        }
+
+        function renderAdminPayments() {
+            const container = document.getElementById('adminPaymentsList');
+            container.innerHTML = paymentMethods.map(m => `
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex justify-between items-start gap-2 text-xs">
+                    <div>
+                        <p class="font-bold text-white">${m.name_ar} <span class="text-slate-400">(${m.name_en})</span></p>
+                        <p class="text-slate-400 mt-1">${m.details_ar || ''}</p>
+                        <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold ${m.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">${m.is_active ? 'مفعّل' : 'متوقف'}</span>
+                    </div>
+                    <div class="flex gap-1.5">
+                        <button onclick="editPaymentMethod(${m.id})" class="bg-slate-800 text-amber-400 p-2 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deletePaymentMethod(${m.id})" class="bg-slate-800 text-red-400 p-2 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2600);
+        }
+    </script>
+</body>
+</html>
